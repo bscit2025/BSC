@@ -1,0 +1,36 @@
+Language Translation using Hugging Face Transformers
+#1
+
+#translation Using google Translator
+from googletrans import Translator
+
+# Initialize the Translator
+translator = Translator()
+
+# Input text to translate
+paragraph = """ A data breach is a security incident where sensitive, confidential, or personal information is accessed, stolen, or exposed by unauthorized individuals. This can happen through malicious attacks like hacking or accidental causes, such as an employee sending a file to the wrong person."""
+
+translated = translator.translate(paragraph, dest='es')#spanish
+print("Original Paragraph:", paragraph)
+print("Translated Paragraph:", translated.text)
+
+#2
+
+!pip install googletrans==4.0.0-rc1
+# using Hugging Face Transformers with the MarianMT model.
+!pip install transformers sentencepiece torch
+from transformers import MarianMTModel, MarianTokenizer
+
+model_name = 'Helsinki-NLP/opus-mt-en-hi'
+tokenizer = MarianTokenizer.from_pretrained(model_name)
+model = MarianMTModel.from_pretrained(model_name)
+
+def translate_text(text):
+    inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True)
+    translated_tokens = model.generate(**inputs, max_length=512)
+    translated_text = tokenizer.batch_decode(translated_tokens, skip_special_tokens=True)[0]
+    return translated_text
+
+paragraph = """A data breach, also known as data leakage, is "the unauthorized exposure, disclosure, or loss of personal information"""
+hindi_translation = translate_text(paragraph)
+print("Hindi Translation:", hindi_translation)
